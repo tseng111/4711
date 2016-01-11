@@ -6,54 +6,95 @@
 	</head>
 	<body>
 		<?php
-                $position = $_GET['board'];
-                $squares = str_split($position);
-                
-                function winner($token, $position) {
-                    $won = false;
-                    if(($position[0] == $token) && 
-                       ($position[1] == $token) &&
-                       ($position[2] == $token)) {
-                        $won = true;
-                    } else if(($position[3] == $token) && 
-                       ($position[4] == $token) &&
-                       ($position[5] == $token)) {
-                        $won = true;
-                    } else if(($position[6] == $token) && 
-                       ($position[7] == $token) &&
-                       ($position[8] == $token)) {
-                        $won = true;
-                    } else if(($position[0] == $token) && 
-                       ($position[3] == $token) &&
-                       ($position[6] == $token)) {
-                        $won = true;
-                    } else if(($position[1] == $token) && 
-                       ($position[4] == $token) &&
-                       ($position[7] == $token)) {
-                        $won = true;
-                    } else if(($position[2] == $token) && 
-                       ($position[5] == $token) &&
-                       ($position[8] == $token)) {
-                        $won = true;
-                    } else if(($position[0] == $token) && 
-                       ($position[3] == $token) &&
-                       ($position[6] == $token)) {
-                        $won = true;
-                    } else if(($position[0] == $token) && 
-                       ($position[5] == $token) &&
-                       ($position[8] == $token)) {
-                        $won = true;
-                    } else if(($position[2] == $token) && 
-                       ($position[5] == $token) &&
-                       ($position[6] == $token)) {
-                        $won = true;
+                class Game {
+                    var $position;
+                    function _construct($squares) {
+                        $this->position = str_split($squares);
                     }
-                    return $won;
                 }
                 
-                if (winner('x',$squares)) echo 'X, You win.';
-                else if (winner('o',$squares)) echo 'O, I win.';
-                else echo 'No winner yet.';
+                function winner($token) {
+                    $result = false;
+                    for($row = 0; $row < 3; $row ++) {
+                        if((($this->position[$row * 3]) == $token) &&
+                        (($this->position[$row * 3 + 1]) == $token) &&
+                        (($this->position[$row * 3 + 2]) == $token)) {
+                            $result = true;
+                        }
+                        for($col = 0; $col < 3; $col++) {
+                            if($row == $col) {
+                                if($this->position[$row * 2 + $col * 2] == $token) {
+                                $result = true;
+                                }
+                                if($this->position[$row + $col] = $token) {
+                                    $result = true;
+                                }
+                            }
+                        }
+                    }
+                    for($col = 0; $col < 3; $col++) {
+                        if((($this->pos[$col]) == $token) &&
+                        (($this->pos[$col + 3]) == $token) &&
+                        (($this->pos[$col + 6]) == $token)) {
+                            return true;
+                        }
+                    }
+                }
+                
+                function display() {
+                    echo '<table cols = "3" style = "font-size:large; font-weight: bold">';
+                    echo '<tr>'; //open the first row
+                    for($pos = 0; $pos < 9; $pos++) {
+                        echo $this->show_cell($pos);
+                        if($pos % 3 == 2) {
+                           echo '</tr><tr>'; //start a new row for the next square
+                        }
+                    }
+                    echo '</tr>'; //close the last row
+                    echo '</table>'; //close the table
+                }
+                
+                function show_cell($which) {
+                    $token = $this->position[$which];
+                    //deal with easy case
+                    if ($token <> '-')
+                        return '<td>'.$token.'</td>';
+                    // now the hard case
+                    $this->newposition = $this->position;
+                    $this->newposition[$which] = 'o';
+                    $move = implode($this->newposition); //
+                    $link = '?board='.$move;
+                    return '<td><a href="'.$link.'">-</a></td>';
+                }
+                
+                function pick_move() {
+                    for($pos = 0; $pos <= 8; $pos++) {
+                        if($this->position[$pos] == '-') {
+                           $this->position[$pos] = 'x';
+                        }
+                        else
+                            echo 'Your Move, Buddy';
+                    }
+                }
+                
+                //Main Game Logic                
+                $squares = $_GET['board'];
+
+                echo "Welcome to George, the evil Tic-Tac-Toe Game.";
+                
+                if($squares == null) {
+                    $squares = '---------';
+                
+                    
+                }
+                $game = new Game($squares);
+                
+                if($game->winner('x'))
+                    echo 'You win. Lucky guesses!';
+                else if ($game->winner('o'))
+                    echo 'I win. Muahahahaha';
+                else
+                    echo 'No winner yet, but you are losing.';
                 
                 ?>
 	</body>
